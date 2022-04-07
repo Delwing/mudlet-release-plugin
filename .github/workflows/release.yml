@@ -1,0 +1,32 @@
+name: Publish new version
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Install dependencies
+        uses: php-actions/composer@v6
+        with:
+          command: install
+      - name: Set versions and archive
+        run: python ./.github/workflows/release.py ${{ github.ref }}
+      - name: Upload .zip
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: mudlet-release.zip
+          tag: ${{ github.ref }}
+          overwrite: true
+      - name: Upload info.json
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: info.json
+          tag: ${{ github.ref }}
+          overwrite: true
+      
