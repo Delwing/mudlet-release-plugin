@@ -1,0 +1,7 @@
+{
+    "require": {
+        "league/html-to-markdown": "^5.1",
+        "tcdent/php-restclient": "^0.1.7",
+        "erusev/parsedown": "^1.7"
+    }
+}

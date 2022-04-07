@@ -1,0 +1,14 @@
+{
+	"name" : "Mudlet Releases",
+	"slug" : "mudlet-releases",
+	"author" : "Piotr Wilczynski",
+	"author_profile" : "https://github.com/Delwing",
+	"version" : "1.0.0",
+	"download_url" : "https://github.com/Delwing/mudlet-release-plugin/releases/latest/download/mudlet-release.zip",
+	"requires_php" : "5.3",
+	"last_updated" : "7.04.2021",
+	"sections" : {
+		"description" : "Adds support for automatic Mudlet release posts creation",
+		"installation" : "Click the activate button and that's it.",
+	}
+}
