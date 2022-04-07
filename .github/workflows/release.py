@@ -23,12 +23,14 @@ with open('info.template.json', "r+") as text_file:
         texts = text_file.read()
         texts = texts.replace("@version@", version)
         texts = texts.replace("@date@", now.strftime("%Y-%m-%d %H:%M:%S"))
+        text_file.close()
 with open('info.json', "w") as text_file:
     text_file.write(texts)
 
 with open('mudlet-release.php', "r+") as text_file:
     texts = text_file.read()
     texts = texts.replace("@version@", version)
+    text_file.close()
 with open('mudlet-release.php', "w") as text_file:
     text_file.write(texts)
 
