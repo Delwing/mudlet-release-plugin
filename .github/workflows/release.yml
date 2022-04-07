@@ -15,7 +15,7 @@ jobs:
         with:
           command: install
       - name: Set versions and archive
-        run: python ./.github/workflows/release.py ${{ github.ref }}
+        run: python ./.github/workflows/release.py ${{ github.event.release.tag_name }}
       - name: Upload .zip
         uses: svenstaro/upload-release-action@v2
         with:
