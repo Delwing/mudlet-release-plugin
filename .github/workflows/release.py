@@ -30,6 +30,7 @@ with open('info.json', "w") as text_file:
 with open('mudlet-release.php', "r+") as text_file:
     texts = text_file.read()
     texts = texts.replace("@version@", version)
+    print(texts)
     text_file.close()
 with open('mudlet-release.php', "w") as text_file:
     text_file.write(texts)
