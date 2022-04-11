@@ -82,7 +82,7 @@ class MudletRelease
 
     function mudlet_post_release()
     {
-        $result = $this->api->get('releases/latest')->decode_response();
+        $result = GetHttpWrapper::get('https://api.github.com/repos/Mudlet/Mudlet/releases/latest');
         if ($result->tag_name) {
             $tag_name = preg_replace('/Mudlet\-/', '', $result->tag_name);
             if ($this->has_release_post_already($tag_name)) {
