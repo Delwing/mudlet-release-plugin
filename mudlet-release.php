@@ -61,6 +61,7 @@ class MudletRelease
         $args = array(
             'meta_key' => 'release-post',
             'value' => $version,
+            'post_status' => 'any'
         );
         return get_posts($args);
     }
