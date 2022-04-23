@@ -30,7 +30,6 @@ class MudletRelease
         add_shortcode(self::SHORTCODE, array($this, 'mudlet_release'));
         add_action('wp_ajax_post_newest_release', array($this, 'mudlet_post_release'));
         add_action('wp_ajax_nopriv_post_newest_release', array($this, 'mudlet_post_release'));
-        add_action('save_post', array($this, 'invalidate_transient'), 10, 2);
         new MudletUpdateCheck($this->version);
     }
 
@@ -48,18 +47,6 @@ class MudletRelease
             }
         }
         return $body;
-    }
-
-    function invalidate_transient($post_ID, WP_Post $post)
-    {
-        if (has_shortcode($post->post_content, self::SHORTCODE)) {
-            $regex = '/\[' . self::SHORTCODE . '](.*?)\[\/' . self::SHORTCODE . ']/';
-            if (preg_match($regex, $post->post_content, $matches)) {
-                $version = $matches[1];
-                delete_transient($this->get_transient_name($version));
-                $this->mudlet_release(null, $version);
-            }
-        }
     }
 
     private function get_transient_name($version)
