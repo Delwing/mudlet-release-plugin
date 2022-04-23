@@ -51,7 +51,7 @@ class MudletRelease
 
     private function get_transient_name($version)
     {
-        return "mudlet-release-$version";
+        return sanitize_title("mudlet-release-$version");
     }
 
     private function get_release_posts($version)
