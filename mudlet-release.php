@@ -70,40 +70,50 @@ class MudletRelease
         return "mudlet-release-$version";
     }
 
-    private function has_release_post_already($version)
+    private function get_release_posts($version)
     {
         $args = array(
             'meta_key' => 'release-post',
             'value' => $version,
         );
-        $query = new WP_Query($args);
-        return $query->have_posts();
+        return get_posts($args);
     }
 
     function mudlet_post_release()
     {
-        $result = GetHttpWrapper::get('https://api.github.com/repos/Mudlet/Mudlet/releases/latest');
+        
+        if (isset($_POST['payload'])) {
+            $payload = json_decode(stripslashes($_POST['payload']));
+            if (isset($payload->release)) {
+                $result = $payload->release;
+            } else {
+                die('Releasse hook not applicable.');
+            }
+        }
+
+        if(!isset($result)) {
+            $result = GetHttpWrapper::get('https://api.github.com/repos/Mudlet/Mudlet/releases/latest');
+        }
         if ($result->tag_name) {
             $tag_name = preg_replace('/Mudlet\-/', '', $result->tag_name);
-            if ($this->has_release_post_already($tag_name)) {
-                die();
+            if (count($this->get_release_posts($tag_name)) == 0) {
+                $languages = pll_languages_list();
+                $translations = array();
+                foreach ($languages as $code) {
+                    $release_category = pll_get_term(self::RELEASE_CATEGORY, $code);
+                    $post_id = wp_insert_post(array(
+                        'post_title' => $result->name,
+                        'post_content' => '[' . self::SHORTCODE . ']' . $tag_name . '[/' . self::SHORTCODE . ']',
+                        'post_status' => 'draft',
+                        'post_category' => array($release_category)
+                    ));
+                    add_post_meta($post_id, 'release-post', $tag_name, true);
+                    pll_set_post_language($post_id, $code);
+                    $translations[$code] = $post_id;
+                }
+                pll_save_post_translations($translations);
             }
-            $languages = pll_languages_list();
-            $translations = array();
-            foreach ($languages as $code) {
-                $release_category = pll_get_term(self::RELEASE_CATEGORY, $code);
-                $post_id = wp_insert_post(array(
-                    'post_title' => $result->name,
-                    'post_content' => '[' . self::SHORTCODE . ']' . $tag_name . '[/' . self::SHORTCODE . ']',
-                    'post_status' => 'draft',
-                    'post_category' => array($release_category)
-                ));
-                add_post_meta($post_id, 'release-post', $tag_name, true);
-                pll_set_post_language($post_id, $code);
-                $translations[$code] = $post_id;
-            }
-            pll_save_post_translations($translations);
-            set_transient($this->get_transient_name($tag_name), $this->parsedown->text($result->body), MONTH_IN_SECONDS);
+            set_transient($this->get_transient_name($tag_name), $this->parsedown->text($result->body), YEAR_IN_SECONDS);
             die();
         }
     }
