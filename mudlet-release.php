@@ -36,12 +36,12 @@ class MudletRelease
     function mudlet_release($atts, $content)
     {
         $transient_name = $this->get_transient_name($content);
-        $body = get_transient($transient_name);
+        $body = get_option($transient_name);
         if (!$body) {
             $result = GetHttpWrapper::get(GITHUB_API_URL . "releases/tags/Mudlet-$content");
             if ($result) {
                 $body = $this->parsedown->text($result->body);
-                set_transient($transient_name, $body);
+                update_option($transient_name, $body, false);
             } else {
                 $body = "Can't get releases post for $content";
             }
@@ -96,7 +96,7 @@ class MudletRelease
                 }
                 pll_save_post_translations($translations);
             }
-            set_transient($this->get_transient_name($tag_name), $this->parsedown->text($result->body));
+            update_option($this->get_transient_name($tag_name), $this->parsedown->text($result->body), false);
             wp_die();
         }
     }
