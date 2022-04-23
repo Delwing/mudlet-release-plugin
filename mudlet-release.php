@@ -42,12 +42,9 @@ class MudletRelease
             $result = GetHttpWrapper::get(GITHUB_API_URL . "releases/tags/Mudlet-$content");
             if ($result) {
                 $body = $this->parsedown->text($result->body);
-                set_transient($transient_name, $body, MONTH_IN_SECONDS);
+                set_transient($transient_name, $body);
             } else {
                 $body = "Can't get releases post for $content";
-                if (is_user_logged_in()) {
-                    $body .= '<br>Message: ' . $result->message;
-                }
             }
         }
         return $body;
@@ -81,17 +78,16 @@ class MudletRelease
 
     function mudlet_post_release()
     {
-        
         if (isset($_POST['payload'])) {
             $payload = json_decode(stripslashes($_POST['payload']));
             if (isset($payload->release)) {
                 $result = $payload->release;
             } else {
-                die('Releasse hook not applicable.');
+                wp_die('Releasse hook not applicable.');
             }
         }
 
-        if(!isset($result)) {
+        if (!isset($result)) {
             $result = GetHttpWrapper::get('https://api.github.com/repos/Mudlet/Mudlet/releases/latest');
         }
         if ($result->tag_name) {
@@ -113,8 +109,8 @@ class MudletRelease
                 }
                 pll_save_post_translations($translations);
             }
-            set_transient($this->get_transient_name($tag_name), $this->parsedown->text($result->body), YEAR_IN_SECONDS);
-            die();
+            set_transient($this->get_transient_name($tag_name), $this->parsedown->text($result->body));
+            wp_die();
         }
     }
 }
@@ -207,6 +203,7 @@ class GetHttpWrapper
 {
 
     private $response;
+    public $error;
 
     function __construct($url, $transient = false)
     {
@@ -224,8 +221,10 @@ class GetHttpWrapper
             if ($this->is_ok($remote)) {
                 $this->response = json_decode(wp_remote_retrieve_body($remote));
                 if ($transient && $this->response) {
-                    set_transient($transient, $this->response, DAY_IN_SECONDS);
+                    set_transient($transient, $this->response, HOUR_IN_SECONDS);
                 }
+            } else {
+                error_log($remote->get_error_message());
             }
         }
     }
