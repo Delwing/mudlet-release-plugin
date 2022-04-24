@@ -45,7 +45,7 @@ class MudletRelease
                 $body = $this->parsedown->text($result->body);
                 set_transient($transient_name, base64_encode($body));
             } else {
-                $body = "Can't get releases post for $content";
+                $body = "Can't get releases post for $content<br>You can view it on <a href=\"https://github.com/Mudlet/Mudlet/releases/$content\">Github</a>.";
             }
         }
         return $body;
@@ -79,10 +79,10 @@ class MudletRelease
             } else {
                 wp_die('Releasse hook not applicable.');
             }
-        } elseif (!isset($result)) {
+        } else {
             $result = GetHttpWrapper::get('https://api.github.com/repos/Mudlet/Mudlet/releases/latest');
         }
-        
+
         if ($result->id) {
             $release_posts = $this->get_release_posts($result->id);
             $languages = pll_languages_list();
