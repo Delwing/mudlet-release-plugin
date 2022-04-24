@@ -40,7 +40,7 @@ class MudletRelease
         if ($body) {
             $body = base64_decode($body);
         } else {
-            $result = GetHttpWrapper::get(GITHUB_API_URL . "releases/tags/Mudlet-$content");
+            $result = GetHttpWrapper::get(GITHUB_API_URL . "releases/$content");
             if ($result) {
                 $body = $this->parsedown->text($result->body);
                 set_transient($transient_name, base64_encode($body));
@@ -51,16 +51,20 @@ class MudletRelease
         return $body;
     }
 
-    private function get_transient_name($version)
+    private function get_transient_name($id)
     {
-        return sanitize_title("mudlet-release-$version");
+        return sanitize_title("mudlet-release-$id");
     }
 
-    private function get_release_posts($version)
+    private function get_release_posts($id)
     {
         $args = array(
-            'meta_key' => 'release-post',
-            'value' => $version,
+            'meta_query' => array(
+                array(
+                    'key' => 'release-post',
+                    'value' => $id
+                )
+            ),
             'post_status' => 'any'
         );
         return get_posts($args);
@@ -80,26 +84,37 @@ class MudletRelease
         if (!isset($result)) {
             $result = GetHttpWrapper::get('https://api.github.com/repos/Mudlet/Mudlet/releases/latest');
         }
-        if ($result->tag_name) {
-            $tag_name = preg_replace('/Mudlet\-/', '', $result->tag_name);
-            if (count($this->get_release_posts($tag_name)) == 0) {
-                $languages = pll_languages_list();
+        if ($result->id) {
+            $release_posts = $this->get_release_posts($result->id);
+            $languages = pll_languages_list();
+            if (count($release_posts) == 0) {
                 $translations = array();
                 foreach ($languages as $code) {
                     $release_category = pll_get_term(self::RELEASE_CATEGORY, $code);
                     $post_id = wp_insert_post(array(
                         'post_title' => $result->name,
-                        'post_content' => '[' . self::SHORTCODE . ']' . $tag_name . '[/' . self::SHORTCODE . ']',
-                        'post_status' => 'draft',
+                        'post_content' => '[' . self::SHORTCODE . ']' . $result->id . '[/' . self::SHORTCODE . ']',
+                        'post_status' => $result->draft ? 'draft' : 'publish',
                         'post_category' => array($release_category)
                     ));
-                    add_post_meta($post_id, 'release-post', $tag_name, true);
+                    add_post_meta($post_id, 'release-post', $result->id, true);
                     pll_set_post_language($post_id, $code);
                     $translations[$code] = $post_id;
                 }
                 pll_save_post_translations($translations);
+            } else {
+                foreach ($languages as $code) {
+                    $post_in_lang = pll_get_post($release_posts[0]->ID, $code);
+                    wp_update_post(array(
+                        'ID' => $post_in_lang,
+                        'post_title' => $result->name,
+                        'post_status' => $result->draft ? 'draft' : 'publish',
+                    ));
+                }
+                foreach ($release_posts as $post) {
+                }
             }
-            set_transient($this->get_transient_name($tag_name), base64_encode($this->parsedown->text($result->body)));
+            set_transient($this->get_transient_name($result->id), base64_encode($this->parsedown->text($result->body)));
             wp_die();
         }
     }
