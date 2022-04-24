@@ -79,11 +79,10 @@ class MudletRelease
             } else {
                 wp_die('Releasse hook not applicable.');
             }
-        }
-
-        if (!isset($result)) {
+        } elseif (!isset($result)) {
             $result = GetHttpWrapper::get('https://api.github.com/repos/Mudlet/Mudlet/releases/latest');
         }
+        
         if ($result->id) {
             $release_posts = $this->get_release_posts($result->id);
             $languages = pll_languages_list();
@@ -94,7 +93,7 @@ class MudletRelease
                     $post_id = wp_insert_post(array(
                         'post_title' => $result->name,
                         'post_content' => '[' . self::SHORTCODE . ']' . $result->id . '[/' . self::SHORTCODE . ']',
-                        'post_status' => $result->draft ? 'draft' : 'publish',
+                        'post_status' => 'draft',// $result->draft ? 'draft' : 'publish',
                         'post_category' => array($release_category)
                     ));
                     add_post_meta($post_id, 'release-post', $result->id, true);
@@ -108,7 +107,7 @@ class MudletRelease
                     wp_update_post(array(
                         'ID' => $post_in_lang,
                         'post_title' => $result->name,
-                        'post_status' => $result->draft ? 'draft' : 'publish',
+                        'post_status' => 'draft',// $result->draft ? 'draft' : 'publish',
                     ));
                 }
                 foreach ($release_posts as $post) {
