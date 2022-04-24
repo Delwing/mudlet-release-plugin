@@ -79,8 +79,6 @@ class MudletRelease
             } else {
                 wp_die('Releasse hook not applicable.');
             }
-        } else {
-            $result = GetHttpWrapper::get('https://api.github.com/repos/Mudlet/Mudlet/releases/latest');
         }
 
         if ($result->id) {
