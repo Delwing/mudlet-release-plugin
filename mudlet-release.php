@@ -9,10 +9,12 @@
 
 defined('ABSPATH') || exit;
 
+@ini_set( 'display_errors', 1 );
+
 require("vendor/autoload.php");
 
 const GITHUB_API_URL = "https://api.github.com/repos/Mudlet/Mudlet/";
-
+    @ini_set( 'display_errors', 1 );
 class MudletRelease
 {
 
@@ -101,6 +103,7 @@ class MudletRelease
                     add_post_meta($post_id, 'release-post', $result->id, true);
                     pll_set_post_language($post_id, $code);
                     $translations[$code] = $post_id;
+                    echo "Post $post_id created.";
                 }
                 pll_save_post_translations($translations);
             } else {
@@ -112,6 +115,7 @@ class MudletRelease
                         'post_title' => $result->name,
                         'post_status' => 'draft',// $result->draft ? 'draft' : 'publish',
                     ));
+                    echo "Post ID: $post_in_lang updated.\n";
                 }
                 foreach ($release_posts as $post) {
                 }
