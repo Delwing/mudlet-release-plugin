@@ -79,6 +79,8 @@ class MudletRelease
             } else {
                 wp_die('Releasse hook not applicable.');
             }
+        } else {
+            wp_die('No release payload.');
         }
 
         if ($result->id) {
