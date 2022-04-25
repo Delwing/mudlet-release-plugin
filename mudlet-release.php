@@ -82,9 +82,11 @@ class MudletRelease
         }
 
         if ($result->id) {
+            echo "Release webhook firing\n";
             $release_posts = $this->get_release_posts($result->id);
             $languages = pll_languages_list();
             if (count($release_posts) == 0) {
+                echo "New release posts will be create for release " . $result->id . "\n";
                 $translations = array();
                 foreach ($languages as $code) {
                     $release_category = pll_get_term(self::RELEASE_CATEGORY, $code);
@@ -100,6 +102,7 @@ class MudletRelease
                 }
                 pll_save_post_translations($translations);
             } else {
+                echo "Release posts found. They will be updated.\n";
                 foreach ($languages as $code) {
                     $post_in_lang = pll_get_post($release_posts[0]->ID, $code);
                     wp_update_post(array(
@@ -111,6 +114,7 @@ class MudletRelease
                 foreach ($release_posts as $post) {
                 }
             }
+            echo "Storing transient for release " . $result->id;
             set_transient($this->get_transient_name($result->id), base64_encode($this->parsedown->text($result->body)));
             wp_die();
         }
