@@ -97,7 +97,7 @@ class MudletRelease
                     $post_id = wp_insert_post(array(
                         'post_title' => $result->name,
                         'post_content' => '[' . self::SHORTCODE . ']' . $result->id . '[/' . self::SHORTCODE . ']',
-                        'post_status' => 'draft',// $result->draft ? 'draft' : 'publish',
+                        'post_status' => $result->draft ? 'draft' : 'publish',
                         'post_category' => array($release_category)
                     ));
                     add_post_meta($post_id, 'release-post', $result->id, true);
@@ -113,7 +113,7 @@ class MudletRelease
                     wp_update_post(array(
                         'ID' => $post_in_lang,
                         'post_title' => $result->name,
-                        'post_status' => 'draft',// $result->draft ? 'draft' : 'publish',
+                        'post_status' => $result->draft ? 'draft' : 'publish',
                     ));
                     echo "Post ID: $post_in_lang updated.\n";
                 }
@@ -144,7 +144,7 @@ class MudletUpdateCheck
 
     public function request_info()
     {
-        return GetHttpWrapper::get('https://github.com/Delwing/mudlet-release-plugin/releases/latest/download/info.json', $this->cache_key);
+        return GetHttpWrapper::get('https://github.com/Mudlet/mudlet-release-plugin/releases/latest/download/info.json', $this->cache_key);
     }
 
     function info($res, $action, $args)
