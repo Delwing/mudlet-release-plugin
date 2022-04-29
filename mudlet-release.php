@@ -9,12 +9,10 @@
 
 defined('ABSPATH') || exit;
 
-@ini_set( 'display_errors', 1 );
-
 require("vendor/autoload.php");
 
 const GITHUB_API_URL = "https://api.github.com/repos/Mudlet/Mudlet/";
-    @ini_set( 'display_errors', 1 );
+
 class MudletRelease
 {
 
