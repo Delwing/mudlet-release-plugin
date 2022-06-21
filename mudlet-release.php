@@ -89,8 +89,9 @@ class MudletRelease
             $release_posts = $this->get_release_posts($result->id);
             $languages = pll_languages_list();
             echo "Storing transient for release " . $result->id;
-            $post_body = base64_encode($this->parsedown->text($result->body));
-            $post_excerpt = strip_tags(wp_trim_excerpt($post_body));
+            $parsed_body = $this->parsedown->text($result->body);
+            $post_body = base64_encode($parsed_body);
+            $post_excerpt = strip_tags(wp_trim_excerpt($parsed_body));
             set_transient($this->get_transient_name($result->id), $post_body);
             if (count($release_posts) == 0) {
                 echo "New release posts will be create for release " . $result->id . "\n";
