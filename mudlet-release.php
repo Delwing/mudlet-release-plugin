@@ -88,6 +88,10 @@ class MudletRelease
             echo "Release webhook firing\n";
             $release_posts = $this->get_release_posts($result->id);
             $languages = pll_languages_list();
+            echo "Storing transient for release " . $result->id;
+            $post_body = base64_encode($this->parsedown->text($result->body));
+            $post_excerpt = strip_tags(wp_trim_excerpt($post_body));
+            set_transient($this->get_transient_name($result->id), $post_body);
             if (count($release_posts) == 0) {
                 echo "New release posts will be create for release " . $result->id . "\n";
                 $translations = array();
@@ -98,7 +102,8 @@ class MudletRelease
                         'post_title' => $result->name,
                         'post_content' => '[' . self::SHORTCODE . ']' . $result->id . '[/' . self::SHORTCODE . ']',
                         'post_status' => $result->draft ? 'draft' : 'publish',
-                        'post_category' => array($release_category)
+                        'post_category' => array($release_category),
+                        'post_excerpt' => $post_excerpt
                     ));
                     add_post_meta($post_id, 'release-post', $result->id, true);
                     pll_set_post_language($post_id, $code);
@@ -114,14 +119,13 @@ class MudletRelease
                         'ID' => $post_in_lang,
                         'post_title' => $result->name,
                         'post_status' => $result->draft ? 'draft' : 'publish',
+                        'post_excerpt' => $post_excerpt
                     ));
                     echo "Post ID: $post_in_lang updated.\n";
                 }
                 foreach ($release_posts as $post) {
                 }
             }
-            echo "Storing transient for release " . $result->id;
-            set_transient($this->get_transient_name($result->id), base64_encode($this->parsedown->text($result->body)));
             wp_die();
         }
     }
