@@ -18,6 +18,7 @@ class MudletRelease
 
     const SHORTCODE = "MudletRelease";
     const RELEASE_CATEGORY = 173;
+    const USER_ID = 2; //Vadi
 
     private $parsedown;
     private $version;
@@ -93,6 +94,7 @@ class MudletRelease
                 foreach ($languages as $code) {
                     $release_category = pll_get_term(self::RELEASE_CATEGORY, $code);
                     $post_id = wp_insert_post(array(
+                        'post_author' => self::USER_ID,
                         'post_title' => $result->name,
                         'post_content' => '[' . self::SHORTCODE . ']' . $result->id . '[/' . self::SHORTCODE . ']',
                         'post_status' => $result->draft ? 'draft' : 'publish',
