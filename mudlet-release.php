@@ -240,7 +240,7 @@ class GetHttpWrapper
                 if ($transient && $this->response) {
                     set_transient($transient, $this->response, HOUR_IN_SECONDS);
                 }
-            } else {
+            } else if (is_wp_error(($remote))) {
                 error_log($remote->get_error_message());
             }
         }
