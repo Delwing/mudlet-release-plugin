@@ -41,7 +41,7 @@ class MudletRelease
         if ($body) {
             $body = base64_decode($body);
         } else {
-            $result = GetHttpWrapper::get(GITHUB_API_URL . "releases/$content");
+            $result = GetHttpWrapper::get(GITHUB_API_URL . "releases/tags/$content");
             if ($result) {
                 $body = $this->parsedown->text($result->body);
                 set_transient($transient_name, base64_encode($body));
