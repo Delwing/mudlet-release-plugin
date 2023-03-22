@@ -20,6 +20,8 @@ class MudletRelease
     const RELEASE_CATEGORY = 173;
     const USER_ID = 2; //Vadi
 
+    const ACTIONS = array('created', 'edited');
+
     private $parsedown;
     private $version;
 
@@ -75,7 +77,7 @@ class MudletRelease
     {
         if (isset($_POST['payload'])) {
             $payload = json_decode(stripslashes($_POST['payload']));
-            if (isset($payload->release)) {
+            if (isset($payload->release) && in_array($payload->action, self::ACTIONS)) {
                 $result = $payload->release;
             } else {
                 wp_die('Releasse hook not applicable.');
@@ -124,8 +126,6 @@ class MudletRelease
                     ));
                     echo "Post ID: $post_in_lang updated.\n";
                 }
-                foreach ($release_posts as $post) {
-                }
             }
             wp_die();
         }
@@ -137,6 +137,7 @@ class MudletUpdateCheck
 
     private $version;
     private $cache_key;
+    private $slug;
 
     function __construct($version)
     {
