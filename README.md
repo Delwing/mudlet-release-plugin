@@ -7,6 +7,6 @@ Plugin will add possibility to automate release post creation. It will use Githu
 Run:
 * `docker-compose up`
 * go to `http://localhost`
-* setup Wordpress
-* install Polylang
-* activate plugin
+
+WP-CLI creates proper site and activates required plugins.
+Default credentials are `admin:admin`

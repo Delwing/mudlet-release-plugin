@@ -20,15 +20,18 @@ services:
     image: composer
     volumes:
       - ./:/var/www/html/wp-content/plugins/mudlet-release
-    command: composer install --working-dir=/var/www/html/wp-content/plugins/mudlet-release
-  wordpress:
-    container_name: local-wordpress
-    depends_on:
+    command: composer install --working-dir=/var/www/html/wp-content/plugins/mudlet-release --no-dev
+  wpcli:
+    depends_on: 
       - db
       - compose
-    image: 'wordpress:latest'
     ports:
       - '80:80'
+    image: wordpress:cli
+    links:
+      - db:db
+    entrypoint: /cli/install.sh
+    container_name: local_wpcli
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: wordpress_user
@@ -38,3 +41,5 @@ services:
       - ./docker/wordpress:/var/www/html
       - ./docker/plugins:/var/www/html/wp-content/plugins
       - ./:/var/www/html/wp-content/plugins/mudlet-release
+      - ./cli:/cli 
+    working_dir: /var/www/html

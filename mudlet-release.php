@@ -12,21 +12,26 @@ defined('ABSPATH') || exit;
 require("vendor/autoload.php");
 
 const GITHUB_API_URL = "https://api.github.com/repos/Mudlet/Mudlet/";
+const RELEASE_CATEGORY = 173;
+const USER_ID = 2; //Vadi
 
 class MudletRelease
 {
 
     const SHORTCODE = "MudletRelease";
-    const RELEASE_CATEGORY = 173;
-    const USER_ID = 2; //Vadi
-
     const ACTIONS = array('created', 'edited');
+
+    private $release_category;
+    private $user_id;
 
     private $parsedown;
     private $version;
 
-    function __construct()
+    function __construct($release_category, $user_id)
     {
+        $this->release_category = $release_category;
+        $this->user_id = $user_id;
+
         $this->version = '@version@';
         $this->parsedown = new Parsedown();
 
@@ -99,9 +104,9 @@ class MudletRelease
                 echo "New release posts will be create for release " . $result->id . "\n";
                 $translations = array();
                 foreach ($languages as $code) {
-                    $release_category = pll_get_term(self::RELEASE_CATEGORY, $code);
+                    $release_category = pll_get_term($this->release_category, $code);
                     $post_id = wp_insert_post(array(
-                        'post_author' => self::USER_ID,
+                        'post_author' => $this->user_id,
                         'post_title' => $result->name,
                         'post_content' => '[' . self::SHORTCODE . ']' . $result->id . '[/' . self::SHORTCODE . ']',
                         'post_status' => $result->draft ? 'draft' : 'publish',
@@ -264,4 +269,4 @@ class GetHttpWrapper
     }
 }
 
-new MudletRelease();
+new MudletRelease(RELEASE_CATEGORY, USER_ID);

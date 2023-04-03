@@ -1,0 +1,10 @@
+ 
+ # /wordpress-docker/docker-compose.yml
+---
+version: "3.3"
+services:
+  compose:
+    command: composer install --working-dir=/var/www/html/wp-content/plugins/mudlet-release
+  wpcli:
+    working_dir: /var/www/html/wp-content/plugins/mudlet-release
+    entrypoint: /cli/install-wp-tests.sh
