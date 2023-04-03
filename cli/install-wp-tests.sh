@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 DB_NAME=${WORDPRESS_DB_NAME}
 DB_USER=${WORDPRESS_DB_USER}
@@ -160,7 +160,5 @@ ln -s /var/www/html $WP_CORE_DIR
 
 #install_wp
 install_test_suite
-
-wp server
 
 ./vendor/bin/phpunit tests --do-not-cache-result --testdox

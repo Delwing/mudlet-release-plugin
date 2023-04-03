@@ -32,6 +32,7 @@ services:
       - db:db
     entrypoint: /cli/install.sh
     container_name: local_wpcli
+    user: 33:33
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: wordpress_user
@@ -41,5 +42,5 @@ services:
       - ./docker/wordpress:/var/www/html
       - ./docker/plugins:/var/www/html/wp-content/plugins
       - ./:/var/www/html/wp-content/plugins/mudlet-release
-      - ./cli:/cli 
+      - ./cli:/cli
     working_dir: /var/www/html
